@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050a14">
+<title>Un Deseo Que Pido</title>
+<link rel="icon" id="fav" href="https://i.pinimg.com/736x/94/7d/c8/947dc83703a844fce4db5e04f2b31240.jpg" referrerpolicy="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Space+Mono:wght@400;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#8fe3ff;
+    --accent2:#9db8ff;
+    --ink:#eef7ff;
+    --dockh:260px;
+    --toph:150px;
+    --sat:env(safe-area-inset-top,0px);
+    --sab:env(safe-area-inset-bottom,0px);
+    --sal:env(safe-area-inset-left,0px);
+    --sar:env(safe-area-inset-right,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  html,body{height:100%}
+  body{
+    background:#050a14;
+    color:var(--ink);
+    font-family:'Space Mono',ui-monospace,monospace;
+    overflow:hidden;
+  }
+
+  /* ---------- Fondos (imágenes y GIFs) que se cruzan lentamente ---------- */
+  .bg{
+    position:fixed;inset:0;
+    opacity:0;visibility:hidden;
+    transition:opacity 3s ease-in-out, visibility 0s linear 3s;
+    animation:drift 26s ease-in-out infinite alternate;
+    animation-play-state:paused;                 /* la capa que no se ve no gasta nada */
+    will-change:opacity,transform;
+  }
+  .bg.on{opacity:1;visibility:visible;transition:opacity 3s ease-in-out, visibility 0s;animation-play-state:running}
+  .bgi{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:center}
+  /* fondo difuminado: un canvas diminuto estirado (sin filtros blur, que pesan muchísimo) */
+  .bgb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7;display:none}
+  .bg.contain .bgb{display:block}
+  .bg.contain .bgi{background-size:contain}
+  @keyframes drift{
+    from{transform:scale(1.05) translate(0,0)}
+    to  {transform:scale(1.12) translate(-1%,-.8%)}
+  }
+  .veil{
+    position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse at center, rgba(3,8,18,.30) 0%, rgba(3,8,18,.72) 100%),
+      linear-gradient(to bottom, rgba(3,8,18,.55), rgba(3,8,18,.10) 38%, rgba(3,8,18,.88));
+    transition:background 1.5s ease;
+  }
+  .veil::after{
+    content:"";position:absolute;inset:0;opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.6'/></svg>");
+  }
+  body.done .veil{
+    background:
+      radial-gradient(ellipse at center, rgba(30,10,50,.10) 0%, rgba(3,8,18,.60) 100%),
+      linear-gradient(to bottom, rgba(3,8,18,.40), rgba(3,8,18,.05) 38%, rgba(3,8,18,.80));
+  }
+  #rain{position:fixed;inset:0;pointer-events:none;z-index:1}
+
+  /* =====================================================
+     BOTONES DE PIEDRA (estilo Minecraft)
+     ===================================================== */
+  .mc{
+    --b1:#8b8b8b; --hi:#c6c6c6; --lo:#373737; --out:#000;
+    --noise:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='1' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 -.25'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.38'/></svg>");
+    font-family:'VT323',ui-monospace,monospace;
+    font-size:1.25rem;line-height:1;letter-spacing:.02em;
+    color:#fff;text-shadow:2px 2px 0 #3e3e3e;
+    background-color:var(--b1);
+    background-image:var(--noise);
+    border:0;border-radius:0;
+    padding:.55rem .9rem;margin:2px;
+    box-shadow:inset -3px -3px 0 var(--lo), inset 3px 3px 0 var(--hi), 0 0 0 2px var(--out);
+    cursor:pointer;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+  @media (hover:hover){
+    .mc:hover:not(:disabled){
+      --b1:#6f7bb8; --hi:#b3bdf2; --lo:#2c3366; --out:#fff;
+      color:#ffffa0;
+    }
+  }
+  .mc:active:not(:disabled){
+    box-shadow:inset 3px 3px 0 var(--lo), inset -3px -3px 0 var(--hi), 0 0 0 2px var(--out);
+    transform:translateY(1px);
+  }
+  .mc:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  .mc:disabled{--b1:#555; --hi:#7b7b7b; --lo:#2b2b2b; color:#9a9a9a;text-shadow:none;cursor:not-allowed}
+  .mc.verde,.mc.act{--b1:#5d8f2f; --hi:#9bd05a; --lo:#2e4a14}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-5px)}40%{transform:translateX(5px)}
+    60%{transform:translateX(-3px)}80%{transform:translateX(3px)}
+  }
+
+  /* ---------- Música (arriba a la derecha) ---------- */
+  .musicbar{
+    position:fixed;z-index:6;
+    top:calc(10px + var(--sat));right:calc(10px + var(--sar));
+    display:flex;align-items:center;
+  }
+  #musica{display:flex;align-items:center;gap:.55rem;padding:.5rem .8rem}
+  .eq{display:inline-flex;align-items:flex-end;gap:2px;height:12px}
+  .eq i{width:3px;height:3px;background:#fff;box-shadow:1px 1px 0 #3e3e3e}
+  #musica.play .eq i{animation:eq .9s steps(4) infinite alternate}
+  .eq i:nth-child(2){animation-delay:-.3s}
+  .eq i:nth-child(3){animation-delay:-.6s}
+  @keyframes eq{from{height:3px}to{height:12px}}
+  #pista{opacity:.8}
+
+  /* ---------- Morse fijo arriba ---------- */
+  .top{
+    position:fixed;left:0;right:0;top:0;z-index:3;pointer-events:none;
+    padding:calc(56px + var(--sat)) calc(4vw + var(--sar)) 16px calc(4vw + var(--sal));
+    background:linear-gradient(to bottom, rgba(3,8,18,.95) 78%, rgba(3,8,18,0));
+  }
+  #morse{
+    --u:7px;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:14px 34px;
+    max-width:900px;margin:0 auto;
+  }
+  .mw{display:flex;gap:calc(var(--u) * 2.4)}
+  .ml{display:flex;align-items:center;gap:calc(var(--u) * .7)}
+  .dot,.dash{background:var(--accent);box-shadow:0 0 10px var(--accent);opacity:.92;height:var(--u)}
+  .dot{width:var(--u);border-radius:50%}
+  .dash{width:calc(var(--u) * 3);border-radius:var(--u)}
+
+  /* ---------- Contenido ---------- */
+  main{
+    position:relative;z-index:2;
+    height:100vh;height:100dvh;
+    overflow-y:auto;overflow-x:hidden;
+    display:flex;flex-direction:column;align-items:center;
+    padding:calc(var(--toph) + .6rem) calc(4vw + var(--sar)) calc(var(--dockh) + 1.5rem) calc(4vw + var(--sal));
+    scroll-padding-bottom:calc(var(--dockh) + 12px);
+    scroll-padding-top:calc(var(--toph) + 8px);
+    text-align:center;
+  }
+  .wrap{margin:auto 0;width:100%;display:flex;flex-direction:column;align-items:center}
+
+  .kicker{
+    font-size:.72rem;letter-spacing:.5em;text-transform:uppercase;
+    color:var(--accent);opacity:.9;margin-bottom:.9rem;
+    text-shadow:0 0 14px var(--accent);
+  }
+  h1{
+    font-family:'Cinzel',serif;font-weight:500;
+    font-size:clamp(1.05rem,2.4vw,1.6rem);letter-spacing:.35em;text-transform:uppercase;
+    margin-bottom:1.8rem;
+    background:linear-gradient(90deg,var(--accent),var(--ink),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  #escena{width:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .38s ease, transform .38s ease}
+  #escena.fuera{opacity:0;transform:translateY(10px)}
+
+  #mensaje{display:flex;flex-direction:column;align-items:center;gap:clamp(.8rem,3vh,2rem);max-width:1100px;width:100%}
+  .line{display:flex;flex-wrap:wrap;justify-content:center;max-width:100%}
+  .l1 {font-size:clamp(1.15rem,3.6vw,2.8rem)}
+  .l15{font-size:clamp(1rem,2.5vw,1.9rem)}
+  .l2 {font-size:clamp(.9rem,1.9vw,1.5rem)}
+  .word{display:inline-flex;flex-wrap:wrap;justify-content:center;margin:.35em .6em}
+
+  .glyph{
+    display:inline-block;margin:0 .12em;
+    animation:float var(--dur,4s) ease-in-out var(--del,0s) infinite alternate;
+  }
+  @keyframes float{
+    0%  {transform:translate(0,0) rotate(0deg)}
+    100%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}
+  }
+  .inner{
+    --near:0;
+    display:flex;flex-direction:column;align-items:center;
+    min-width:2em;
+    transform:scale(calc(1 + var(--near) * .4));
+    transition:transform .15s linear;
+  }
+  .let{
+    font-family:'Cinzel',serif;font-style:normal;font-weight:700;
+    font-size:1.45em;height:1.35em;line-height:1.35em;
+    opacity:0;transform:translateY(.5em) scale(.5);
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,1.4,.4,1);
+    color:var(--accent);
+    text-shadow:0 0 18px var(--accent);
+  }
+  /* números cifrados con letra de píxeles */
+  .num{
+    font-family:'VT323',ui-monospace,monospace;font-weight:400;
+    font-size:1.35em;line-height:1;letter-spacing:.05em;
+    color:color-mix(in srgb, var(--accent) calc(var(--near) * 100%), var(--ink));
+    text-shadow:2px 2px 0 rgba(0,0,0,.85), 0 0 calc(var(--near) * 22px) var(--accent);
+    transition:opacity .5s ease;
+  }
+  .slot{
+    display:block;width:100%;height:4px;margin-top:.3em;
+    background:repeating-linear-gradient(90deg,var(--accent) 0 4px,transparent 4px 8px);
+    opacity:calc(.3 + var(--near) * .7);
+  }
+  .glyph.rev .let{opacity:1;transform:translateY(0) scale(1)}
+  .glyph.rev .num{font-size:.75em;opacity:.55}
+  .glyph.lit .num{display:none}
+  .glyph.lit .slot{display:none}
+  .glyph.lit .let{opacity:1;transform:none}
+  /* niveles con mucho texto: se mueven las palabras (no cada letra) para no saturar el equipo */
+  .denso .glyph{animation:none}
+  .denso .word{animation:float var(--dur,4s) ease-in-out var(--del,0s) infinite alternate}
+
+  /* Texto de revelación + corazón morado de píxeles (solo nivel 1) */
+  #revbox{
+    max-height:0;opacity:0;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;
+    transition:max-height 1s ease, opacity 1s ease, margin 1s ease;
+  }
+  #revbox.visible{max-height:320px;opacity:1;margin-top:1.8rem}
+  #revelacion{
+    font-family:'Cinzel',serif;font-weight:500;
+    font-size:clamp(1rem,2.3vw,1.5rem);letter-spacing:.08em;line-height:1.5;
+    max-width:36rem;
+    text-shadow:0 0 16px var(--accent);
+  }
+  #revelacion:empty{display:none}
+  #corazon{
+    width:48px;height:44px;margin:.9rem 0 .3rem;overflow:visible;
+    shape-rendering:crispEdges;
+    filter:drop-shadow(0 0 7px rgba(170,90,255,.7));
+  }
+  #corazon .px{opacity:0;transform-box:fill-box;transform-origin:center}
+  #corazon.draw .px{animation:pxin .24s steps(3) both;animation-delay:var(--d)}
+  #corazon.listo .px{opacity:1}
+  #corazon.listo{animation:latido 1.9s ease-in-out infinite}
+  @keyframes pxin{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+  @keyframes latido{
+    0%,100%{transform:scale(1)}
+    14%{transform:scale(1.12)}
+    28%{transform:scale(1)}
+    42%{transform:scale(1.07)}
+  }
+  #btnSig{margin-top:1.1rem;font-size:1.3rem;padding:.6rem 1.2rem}
+  #btnSig[hidden]{display:none}
+
+  .hint{
+    margin-top:2rem;font-size:.78rem;letter-spacing:.1em;opacity:.7;max-width:34rem;line-height:1.7;
+  }
+  .hint:empty{display:none}
+  .hint.firma{
+    font-family:'Cinzel',serif;font-style:italic;font-size:clamp(.95rem,2vw,1.25rem);
+    letter-spacing:.28em;text-transform:uppercase;opacity:.9;
+    color:var(--accent);text-shadow:0 0 14px var(--accent);
+  }
+
+  /* =====================================================
+     HUD DE ABAJO (como el de Minecraft)
+     ===================================================== */
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;z-index:5;
+    background:rgba(8,10,14,.9);
+    border-top:3px solid #000;
+    box-shadow:0 -2px 0 rgba(255,255,255,.12);
+    padding-bottom:calc(.5rem + var(--sab));
+  }
+  /* barra de experiencia */
+  .xp{position:relative;margin:26px calc(12px + var(--sar)) 0 calc(12px + var(--sal))}
+  .lvl{
+    position:absolute;left:50%;top:-24px;transform:translateX(-50%);
+    font-family:'VT323',monospace;font-size:1.7rem;line-height:1;color:#80ff20;
+    text-shadow:2px 0 #000,-2px 0 #000,0 2px #000,0 -2px #000,0 0 8px rgba(124,252,32,.55);
+  }
+  .lvl.pop{animation:lvlpop .6s ease}
+  @keyframes lvlpop{0%{transform:translateX(-50%) scale(1)}35%{transform:translateX(-50%) scale(1.7)}100%{transform:translateX(-50%) scale(1)}}
+  .progress{
+    height:16px;padding:3px;position:relative;
+    background:#2e3636;
+    box-shadow:0 0 0 2px #000, inset 0 2px 0 #1a2020, inset 0 -2px 0 #4a5656;
+  }
+  /* las muescas de la barra */
+  .progress::after{
+    content:"";position:absolute;inset:3px;pointer-events:none;
+    background-image:linear-gradient(90deg,transparent calc(100% - 2px),rgba(0,0,0,.4) 0);
+    background-size:5% 100%;
+  }
+  .bar{
+    height:100%;width:0;
+    background:linear-gradient(#d4ff8f 0 30%,#86e92a 30% 65%,#4ba80f 65%);
+    box-shadow:0 0 10px rgba(124,252,32,.55);
+    transition:width .7s steps(14);
+  }
+  .xp.up .bar{animation:brillo .5s ease}
+  @keyframes brillo{50%{filter:brightness(1.7)}}
+
+  .dock-top{
+    display:flex;align-items:center;gap:.5rem 1rem;flex-wrap:wrap;
+    padding:.55rem calc(.9rem + var(--sar)) .1rem calc(.9rem + var(--sal));
+  }
+  .niveles{display:flex;gap:.4rem;flex-wrap:wrap}
+  .nv{display:flex;flex-direction:column;gap:5px;text-align:left;padding:.5rem .8rem}
+  .nv b{font-family:'Press Start 2P',monospace;font-size:.56rem;font-weight:400;letter-spacing:0}
+  .nv small{font-size:1rem}
+  .nv .lk{display:none}
+  .nv.lock .lk{display:inline}
+  #estado{
+    flex:1;min-width:150px;text-align:center;
+    font-family:'VT323',monospace;font-size:1.25rem;color:#fff;text-shadow:2px 2px 0 #000;
+  }
+  .acciones{display:flex;gap:.3rem;flex-wrap:wrap}
+
+  /* hotbar: cada letra es una ranura con su número como cantidad del objeto */
+  .keys{
+    display:flex;flex-wrap:wrap;justify-content:center;
+    width:fit-content;max-width:calc(100% - 24px);margin:.4rem auto 0;padding:5px;
+    background:rgba(18,20,16,.6);
+    box-shadow:0 0 0 2px #000, inset 0 0 0 2px #8b8b8b, inset 0 0 0 4px #373737;
+  }
+  .key{
+    position:relative;flex:0 0 auto;
+    width:48px;height:48px;margin:3px;padding:0;
+    display:grid;place-items:center;
+    font-family:'Press Start 2P',monospace;font-size:.95rem;line-height:1;
+    color:#fff;text-shadow:2px 2px 0 #3f3f3f;
+    background:rgba(40,46,36,.7);
+    border:3px solid;border-color:#373737 #fff #fff #373737;border-radius:0;
+    cursor:pointer;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  }
+  .key .kc{
+    position:absolute;right:2px;bottom:-1px;
+    font-family:'VT323',monospace;font-size:1.1rem;line-height:1;color:#fff;
+    text-shadow:2px 2px 0 #3f3f3f;
+  }
+  @media (hover:hover){
+    .key:hover{
+      outline:3px solid #fff;outline-offset:1px;z-index:1;
+      background:rgba(255,255,255,.16);
+    }
+  }
+  .key:focus-visible{outline:3px solid #fff;outline-offset:1px}
+  .key:active{transform:translateY(1px)}
+  .key.ok{background:rgba(90,160,40,.55)}
+  .key.mal{background:rgba(190,45,45,.65);animation:shake .45s ease}
+
+  /* ---------- Cursor yin-yang (solo con ratón) ---------- */
+  #cur{
+    position:fixed;left:0;top:0;z-index:99999;pointer-events:none;
+    width:26px;height:26px;margin:-13px 0 0 -13px;
+    background:center/contain no-repeat;
+    border-radius:50%;
+    filter:drop-shadow(0 0 4px rgba(0,0,0,.6));
+    opacity:0;display:none;
+    transition:opacity .15s ease, width .12s ease, height .12s ease, margin .12s ease;
+    will-change:transform;
+  }
+  html.yy #cur{display:block}
+  html.yy #cur.vis{opacity:1}
+  html.yy #cur.down{width:20px;height:20px;margin:-10px 0 0 -10px}
+  html.yy, html.yy *{cursor:none !important}
+
+  /* ---------- Tabletas ---------- */
+  @media (min-width:641px) and (max-width:1024px){
+    .key{width:44px;height:44px}
+    .l1 {font-size:clamp(1.2rem,4.4vw,2.6rem)}
+    .l15{font-size:clamp(1rem,3vw,1.8rem)}
+    .l2 {font-size:clamp(.95rem,2.4vw,1.5rem)}
+  }
+  /* ---------- Celulares ---------- */
+  @media (max-width:640px){
+    .mc{font-size:1.1rem}
+    .niveles{flex-wrap:nowrap;overflow-x:auto;flex-basis:100%;scrollbar-width:none}
+    .niveles::-webkit-scrollbar{display:none}
+    .nv{flex:0 0 auto}
+    .keys{
+      flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;
+      width:auto;max-width:none;margin:.4rem 10px 0;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain;
+    }
+    .keys::-webkit-scrollbar{display:none}
+    .key{width:42px;height:42px;font-size:.8rem}
+    .key .kc{font-size:1rem}
+    #estado{order:3;flex-basis:100%;font-size:1.05rem}
+    #morse{--u:5px;gap:10px 20px}
+    h1{letter-spacing:.2em}
+    .kicker{letter-spacing:.3em}
+    .nv{padding:.4rem .6rem}
+    .nv small{font-size:.9rem}
+    .hint{font-size:.7rem}
+    .hint.firma{letter-spacing:.2em}
+  }
+  /* ---------- Celular acostado / pantallas muy bajas ---------- */
+  @media (max-height:520px){
+    .top{padding-top:calc(50px + var(--sat));padding-bottom:10px}
+    .hint,.kicker{display:none}
+    h1{margin-bottom:.7rem;font-size:.95rem}
+    #morse{--u:3px;gap:6px 14px}
+    .keys{
+      flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;
+      width:auto;max-width:none;margin:.3rem 10px 0;scrollbar-width:none;
+    }
+    .keys::-webkit-scrollbar{display:none}
+    .key{width:38px;height:38px;font-size:.7rem;margin:2px}
+    .key .kc{font-size:.9rem}
+    .mc{font-size:1rem;padding:.4rem .7rem}
+    .nv small{display:none}
+    .nv b{font-size:.5rem}
+    .xp{margin-top:22px}
+    .progress{height:12px}
+    .dock-top{padding-top:.35rem;flex-wrap:nowrap}
+    #estado{flex:1;min-width:0;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #mensaje{gap:1rem}
+  }
+
+  /* =====================================================
+     AJUSTE COMPACTO: todo se adapta al tamaño de la pantalla
+     ===================================================== */
+  :root{ --ks:clamp(30px,calc((100vw - 64px)/27 - 6px),44px) }
+  .top{padding-top:calc(50px + var(--sat));padding-bottom:12px}
+  #morse{--u:clamp(4px,min(.55vw,1vh),7px);gap:8px 22px}
+  h1{margin-bottom:1rem}
+  .l1 {font-size:clamp(1.05rem,min(3.6vw,6.5vh),2.8rem)}
+  .l15{font-size:clamp(.95rem,min(2.5vw,4.6vh),1.9rem)}
+  .l2 {font-size:clamp(.85rem,min(1.9vw,3.6vh),1.5rem)}
+
+  .dock{padding-bottom:calc(.35rem + var(--sab))}
+  .xp{margin-top:22px}
+  .lvl{font-size:1.4rem;top:-20px}
+  .progress{height:12px;padding:2px}
+  .dock-top{flex-wrap:wrap;gap:.3rem .6rem;padding:.4rem calc(.8rem + var(--sar)) 0 calc(.8rem + var(--sal))}
+  .niveles{
+    position:relative;flex:1 1 0;min-width:0;flex-wrap:nowrap;overflow-x:auto;padding:3px;
+    scrollbar-width:none;overscroll-behavior-x:contain;
+  }
+  .niveles::-webkit-scrollbar{display:none}
+  .nv{flex:0 0 auto;gap:2px;padding:.3rem .6rem;white-space:nowrap}
+  .nv b{font-size:.5rem}
+  .nv small{font-size:.85rem}
+  .acciones{flex:0 0 auto;flex-wrap:nowrap}
+  .acciones .mc{font-size:1rem;padding:.4rem .7rem}
+  #estado{order:3;flex:1 1 100%;min-width:0;font-size:1rem;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .keys{
+    flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;
+    width:fit-content;max-width:calc(100% - 20px);margin:.3rem auto 0;padding:3px;
+    scrollbar-width:none;overscroll-behavior-x:contain;
+  }
+  .keys::-webkit-scrollbar{display:none}
+  .key{width:var(--ks);height:var(--ks);margin:2px;font-size:calc(var(--ks) * .36)}
+  .key .kc{font-size:max(.75rem,calc(var(--ks) * .3))}
+  @media (max-height:820px){ .nv small{display:none} }
+  @media (max-height:520px){
+    :root{--ks:30px}
+    .dock-top{flex-wrap:nowrap}
+    #estado{order:0;flex:0 1 190px}
+  }
+
+  /* Botones Sí / No del final */
+  #opciones{display:flex;gap:1rem;margin-top:1.1rem}
+  #opciones[hidden]{display:none}
+  #opciones .mc{font-size:1.5rem;padding:.6rem 1.8rem}
+  /* Cuando se responde: se va todo menos la música */
+  body.fin .dock, body.fin main, body.fin .top, body.fin #rain{
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity 1.4s ease, visibility 0s linear 1.4s;
+  }
+  body.fin .veil{background:radial-gradient(ellipse at center, rgba(3,8,18,0) 40%, rgba(3,8,18,.45) 100%)}
+  @media (prefers-reduced-motion:reduce){
+    .glyph,.denso .word,.bg,#corazon.listo{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="bg" id="bgA"><canvas class="bgb" width="32" height="18"></canvas><div class="bgi"></div></div>
+  <div class="bg" id="bgB"><canvas class="bgb" width="32" height="18"></canvas><div class="bgi"></div></div>
+  <div class="veil"></div>
+  <canvas id="rain"></canvas>
+  <div id="cur" aria-hidden="true"></div>
+
+  <div class="musicbar">
+    <button id="musica" class="mc" type="button">
+      <span class="eq"><i></i><i></i><i></i></span>
+      <span id="musicaTxt">Tocar música</span>
+      <span id="pista"></span>
+    </button>
+  </div>
+
+  <!-- el morse queda fijo arriba en todos los niveles -->
+  <header class="top" id="top">
+    <div id="morse" aria-label="Mensaje en código morse"></div>
+  </header>
+
+  <main id="main">
+    <div class="wrap">
+      <div class="kicker" id="kicker"></div>
+      <h1 id="titulo"></h1>
+
+      <div id="escena">
+        <div id="mensaje" aria-label="Mensaje cifrado"></div>
+
+        <div id="revbox" aria-live="polite">
+          <p id="revelacion"></p>
+          <svg id="corazon" viewBox="0 0 11 10" aria-hidden="true"></svg>
+          <button id="btnSig" class="mc verde" type="button" hidden>Siguiente nivel ▶</button>
+          <div id="opciones" hidden>
+            <button id="btnSi" class="mc verde" type="button">Sí</button>
+            <button id="btnNo" class="mc" type="button">No</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint" id="hint"></p>
+    </div>
+  </main>
+
+  <footer class="dock" id="dock">
+    <div class="xp" id="xp">
+      <span class="lvl" id="lvl">1</span>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+    </div>
+    <div class="dock-top">
+      <nav class="niveles" id="niveles" aria-label="Niveles"></nav>
+      <span id="estado" role="status" aria-live="polite"></span>
+      <div class="acciones">
+        <button id="btnRev" class="mc" type="button">Revelar todo</button>
+        <button id="btnRes" class="mc" type="button">Reiniciar</button>
+      </div>
+    </div>
+    <div class="keys" id="keys"></div>
+  </footer>
+
+<script>
+/* =====================================================
+   CONFIGURACIÓN  (aquí cambias lo que quieras)
+   ===================================================== */
+
+// Código del Nivel 1 (el tuyo)
+const CODIGO_1 = {
+  A:56, B:23, C:45, D:87, E:98, F:100, G:40, H:19, I:39, J:33, K:69, L:14, M:77,
+  N:302, "Ñ":56, O:88, P:520, Q:142, R:48, S:75, T:2, U:4, V:7642, W:451, X:314, Y:37, Z:8
+};
+// Códigos de los niveles 2 y 3 (distintos; cámbialos por los que quieras)
+const CODIGO_2 = {
+  A:7, B:61, C:15, D:92, E:3, F:48, G:204, H:86, I:11, J:530, K:27, L:73, M:9,
+  N:65, "Ñ":118, O:34, P:1, Q:888, R:52, S:16, T:99, U:271, V:42, W:5, X:690, Y:24, Z:13
+};
+const CODIGO_3 = {
+  A:21, B:84, C:37, D:6, E:70, F:19, G:53, H:112, I:8, J:44, K:95, L:2, M:31,
+  N:177, "Ñ":63, O:14, P:260, Q:49, R:90, S:4, T:58, U:123, V:17, W:300, X:72, Y:41, Z:9
+};
+const CODIGO_4 = {
+  A:12, B:70, C:29, D:55, E:8, F:301, G:64, H:17, I:93, J:240, K:36, L:81, M:5,
+  N:47, "Ñ":150, O:22, P:68, Q:710, R:39, S:96, T:11, U:58, V:134, W:26, X:480, Y:75, Z:3
+};
+
+const CODIGO_5 = {
+  A:948, B:67, C:848, D:510, E:405, F:534, G:316, H:17, I:947, J:390, K:210, L:587, M:386, N:904, "Ñ":818, O:383, P:530, Q:933, R:155, S:247, T:778, U:834, V:644, W:419, X:877, Y:87, Z:163
+};
+const CODIGO_6 = {
+  A:607, B:687, C:77, D:995, E:834, F:991, G:396, H:754, I:972, J:188, K:27, L:97, M:3, N:683, "Ñ":608, O:266, P:750, Q:774, R:864, S:821, T:730, U:279, V:189, W:374, X:764, Y:59, Z:219
+};
+const CODIGO_7 = {
+  A:304, B:197, C:769, D:570, E:993, F:735, G:45, H:866, I:148, J:851, K:712, L:380, M:242, N:68, "Ñ":808, O:70, P:220, Q:316, R:981, S:544, T:124, U:423, V:589, W:698, X:21, Y:745, Z:819
+};
+const CODIGO_8 = {
+  A:28, B:706, C:459, D:535, E:837, F:552, G:183, H:350, I:533, J:968, K:138, L:204, M:210, N:861, "Ñ":293, O:544, P:203, Q:69, R:657, S:344, T:680, U:653, V:970, W:674, X:619, Y:634, Z:743
+};
+
+const CODIGO_9 = {
+  A:494, B:247, C:596, D:675, E:938, F:357, G:159, H:950, I:371, J:16, K:227, L:812, M:47, N:91, "Ñ":29, O:945, P:741, Q:501, R:692, S:265, T:554, U:317, V:213, W:427, X:705, Y:688, Z:674
+};
+
+const CODIGO_10 = {
+  A:391, B:182, C:929, D:796, E:464, F:863, G:906, H:793, I:129, J:757, K:36, L:843, M:337, N:48, "Ñ":604, O:539, P:887, Q:832, R:671, S:706, T:740, U:916, V:884, W:221, X:414, Y:427, Z:764
+};
+const CODIGO_11 = {
+  A:399, B:869, C:408, D:187, E:563, F:866, G:800, H:587, I:314, J:101, K:998, L:898, M:100, N:616, "Ñ":922, O:773, P:267, Q:504, R:953, S:989, T:573, U:566, V:511, W:340, X:369, Y:669, Z:328
+};
+
+// Cada nivel: su mensaje cifrado, su código y lo que sale al descifrarlo.
+// Para agregar más niveles, copia un bloque y cámbiale el texto.
+//   corazon:true  → dibuja el corazón morado al terminar (solo el nivel 1)
+//   pie           → texto de abajo   |   firma:true → con letra elegante
+const NIVELES = [
+  { nombre:"Nivel 1", sub:"Viaje inesperado",
+    kicker:"✦ nivel 1 ✦", titulo:"Viaje inesperado",
+    codigo:CODIGO_1,
+    mensajes:["ME TARDE MEDIA SEMANA EN ESTO"],
+    revelacion:"Fue algo difícil, pero lo vale por ti",
+    corazon:true,
+    pie:"Everything for you", firma:true },
+  { nombre:"Nivel 2", sub:"Las revelaciones",
+    kicker:"✦ nivel 2 ✦", titulo:"Las revelaciones",
+    codigo:CODIGO_2,
+    mensajes:["PERO TENGO ALGO DE MIEDO EN ESTO"],
+    revelacion:"", corazon:false,
+    pie:"Aquí el código es otro: fíjate en los números de las ranuras, ya no son los mismos." },
+  { nombre:"Nivel 3", sub:"Un mundo extraño",
+    kicker:"✦ nivel 3 ✦", titulo:"Un mundo extraño",
+    codigo:CODIGO_3,
+    mensajes:["MUCHA HISTORIA TANTO TIEMPO PERO ME QUISE AFERRAR DESDE HACE TIEMPO"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 4", sub:"Aferramiento",
+    kicker:"✦ nivel 4 ✦", titulo:"Aferramiento",
+    codigo:CODIGO_4,
+    mensajes:["DESDE LA PRIMARIA TUVE MIEDO PERO PASARON 4 LARGOS AÑOS PERO EL MUNDO ES ALGO EXTRAÑO QUE ME DIO OTRA OPORTUNIDAD"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 5", sub:"Un Pensamiento",
+    kicker:"✦ nivel 5 ✦", titulo:"Un Pensamiento",
+    codigo:CODIGO_5,
+    mensajes:["DIRIA QUE AUNQUE PASE EL TIEMPO Y LO QUE ESCUCHE DE OTROS NUNCA VOY A CREER ESO DE ELLOS PREFIERO CONOCER TODO Y ENTENDER LAS COSAS DE TI"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 6", sub:"Algo de Miedo",
+    kicker:"✦ nivel 6 ✦", titulo:"Algo de Miedo",
+    codigo:CODIGO_6,
+    mensajes:["SE QUE ES ALGO INESPERADO PERO DIRIA QUE NO QUIERO DEJAR LA OPORTUNIDAD"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 7", sub:"Será que es un momento",
+    kicker:"✦ nivel 7 ✦", titulo:"Será que es un momento",
+    codigo:CODIGO_7,
+    mensajes:["TAL VEZ NO SEPAS O SOLO VEAS ALGO ASI NORMAL PERO QUISIERA DECIR QUE ME GUSTAS MUCHO MEGAN"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 8", sub:"Pensamiento Profundo",
+    kicker:"✦ nivel 8 ✦", titulo:"Pensamiento Profundo",
+    codigo:CODIGO_8,
+    mensajes:["DIRIA QUE DESDE LA PRIMARIA PERO NO TUVE UNA OPORTUNIDAD PORQUE LA VERDAD TE VEIAS MUY LINDA PERO TUVE MIEDO DESDE AHI DESPUES NO SUPE NADA Y AHORA TENGO ESA OPORTUNIDAD Y DIRIA QUE TENGO TANTAS COSAS QUE DECIR PERO NO ACABARIA PERO IGUALMENTE LO HARE"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 9", sub:"Gustar",
+    kicker:"✦ nivel 9 ✦", titulo:"Gustar",
+    codigo:CODIGO_9,
+    mensajes:["SIENTO PIENSO TANTAS COSAS DE TI ERES LINDA BONITA TU PERSONALIDAD TUS GUSTOS TUS TALENTOS TU FORMA DE HACER LAS COSAS Y SE QUE NO ACABARIA PERO HICE ESTA ELECCION CON VERTE Y NO ME EQUIVOQUE COMO DIJE NO JUZGES A ALGUIEN POR APARIENCIA SI NO POR LO QUE ES DENTRO Y ESTOY TOTALMENTE SEGURO"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  { nombre:"Nivel 10", sub:"Quisiera Preguntarte",
+    kicker:"✦ nivel 10 ✦", titulo:"Quisiera Preguntarte",
+    codigo:CODIGO_10,
+    mensajes:["SERA ESTO", "QUISIERA DECIRTE UNA PREGUNTA APARTE DE TODO"],
+    revelacion:"", corazon:false,
+    pie:"" },
+  // Último nivel: al descifrarlo salen las opciones Sí / No y al elegir se acaba todo.
+  { nombre:"Nivel 11", sub:"La Pregunta",
+    kicker:"✦ nivel 11 ✦", titulo:"La Pregunta",
+    codigo:CODIGO_11,
+    mensajes:["MEGAN TE QUIERO HACER LA PREGUNTA MAS IMPORTANTE", "Y ES: QUIERES SER MI NOVIA?"],
+    destacar:1,
+    revelacion:"", corazon:false, pregunta:true,
+    pie:"" }
+];
+const ESTADO_INICIAL = "Elige la letra que crees que corresponde a cada código";
+
+// Morse de arriba (siempre visible y quieto). Puntos y rayas; "/" separa palabras.
+const MORSE_RAW = "- . / .- -- --- / -- ..- -.-. .... --- / .--. . .-. --- / - . -. --. --- / -- ..- -.-. .... --- / -- .. . -.. ---";
+
+// Música: las canciones suenan una tras otra y al terminar vuelven a empezar.
+// Guarda tus archivos en una carpeta "musica" junto a este HTML.
+// Hay 12 ranuras: las que no existan se saltan solas. Para más, agrega líneas.
+const CANCIONES = [
+  "musica/1.mp3","musica/2.mp3","musica/3.mp3","musica/4.mp3",
+  "musica/5.mp3","musica/6.mp3","musica/7.mp3","musica/8.mp3",
+  "musica/9.mp3","musica/10.mp3","musica/11.mp3","musica/12.mp3"
+];
+const VOLUMEN = 0.5;
+
+// Fondos. Primero las imágenes y al final los GIFs; cambian solos cada 10 segundos.
+// "local" (opcional) = archivo grande en tu carpeta; si existe se usa en vez de la miniatura de internet.
+const FONDOS = [
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4A91ZMTEfTHaOEAr7gjP3sb-9GpSSwoAO4SOwhnK_xGFaHYdGYSvVklc&s=10", local:"img/fondo1.jpg", preset:["#8fe3ff","#9db8ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtWDD8H5Dfpyk_RioNj4442_PabnmFFfm_omeB46sZi-lBM_OV7IFmfTU&s=10", local:"img/fondo2.jpg", preset:["#ffb8e6","#c4a8ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS2sAzMVcaoacx-MauSgB5fm9mW-3QGjeAHDzA8XKllQ&s=10", local:"img/fondo3.jpg", preset:["#ffd79a","#ffa6a6"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiH8hwhXI-QDs0r_z9aNaYiR2OCYOt5XwGzuDH6uSXBg&s=10", local:"img/fondo4.jpg", preset:["#8fe3ff","#9db8ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRewIZruP8YbM1MuKz1cmSz4PdtU-Bib8zGCwBpqn9BqQ&s=10", local:"img/fondo5.jpg", preset:["#ffb8e6","#c4a8ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ_mBEfuXaWT6A1gkjPjLC7ZDzF1sDheUCt0j2o2PUuQ&s=10", local:"img/fondo6.jpg", preset:["#ffd79a","#ffa6a6"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdbLVcaGtI0Gn5SYUJejTDSZ4SQ87rhNkV8aug4s3AwA&s=10", preset:["#8fe3ff","#9db8ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmMZ4lUnUSbm6gPIvBC_kUujGtG13L-4Z8Nhek31Hp3RAwXkZqwcwcTo-P&s=10", preset:["#ffb8e6","#c4a8ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ1asDQzve0A6VHSc3_mioXeeMqgaPY65iknw800pgYw&s=10", preset:["#ffd79a","#ffa6a6"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb9uaDW1bAUYZw7wD45kz9W8ARFLUcaK-DQ29S0WoVtHjjxk9rghTnaIo&s=10", preset:["#b8ffcf","#8fe3ff"] },
+  { url:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCfEOoOYrBj_ugZ6LnmetOShfk3pcohGynmVnGcq8xhg&s=10", preset:["#ffe08f","#ff9d9d"] },
+  // GIFs
+  { url:"https://media.tenor.com/py__7TwOTmcAAAAM/wifies-unstable-smp.gif", preset:["#b8ffcf","#8fe3ff"] },
+  { url:"https://media.tenor.com/bvtMztQukvIAAAAM/ayahmade-squiddo.gif",   preset:["#ffe08f","#ff9d9d"] },
+  { url:"https://media.tenor.com/5Xwl2hMYc9IAAAAM/wemmbu-squiddo.gif",     preset:["#ffb8e6","#c4a8ff"] },
+  { url:"https://gifdb.com/images/thumbnail/squiddo-therealsquiddo-gif-ni6uws7y75atrhvy.gif", preset:["#8fe3ff","#9db8ff"] },
+  { url:"https://media.tenor.com/1YV3a7GsADQAAAAM/scaredy-cat-duo-squiddo.gif", preset:["#ffd79a","#ffa6a6"] },
+  { url:"https://media.tenor.com/-Hm7amCTU7EAAAAM/fluxarata-sapixon.gif", preset:["#ffb8e6","#c4a8ff"] },
+  { url:"https://i.redd.it/uwtuj4dxqxmf1.gif", preset:["#8fe3ff","#9db8ff"] }
+];
+const SEGUNDOS_POR_FONDO = 10;
+
+/* =====================================================
+   UTILIDADES
+   ===================================================== */
+const $ = id => document.getElementById(id);
+const rnd = (a,b) => a + Math.random()*(b-a);
+const hex2rgb = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+function rgb2hsl(r,g,b){
+  r/=255;g/=255;b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0, l=(mx+mn)/2, s = d===0 ? 0 : d/(1-Math.abs(2*l-1));
+  if(d){
+    if(mx===r) h=((g-b)/d)%6; else if(mx===g) h=(b-r)/d+2; else h=(r-g)/d+4;
+    h*=60; if(h<0) h+=360;
+  }
+  return [h,s,l];
+}
+function hsl2rgb(h,s,l){
+  const c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2;
+  let r=0,g=0,b=0;
+  if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}
+  else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}
+  return [(r+m)*255,(g+m)*255,(b+m)*255];
+}
+
+// El alto de las barras cambia según el dispositivo: el contenido se ajusta solo
+const dock = $('dock'), topEl = $('top');
+function medirBarras(){
+  root.style.setProperty('--dockh', dock.offsetHeight + 'px');
+  root.style.setProperty('--toph',  topEl.offsetHeight + 'px');
+}
+const root = document.documentElement;
+if (window.ResizeObserver){ const ro = new ResizeObserver(medirBarras); ro.observe(dock); ro.observe(topEl); }
+addEventListener('resize', medirBarras);
+medirBarras();
+
+/* =====================================================
+   CÓDIGO MORSE (estático, siempre arriba)
+   ===================================================== */
+(function(){
+  const box = $('morse');
+  MORSE_RAW.split('/').forEach(pal => {
+    const w = document.createElement('div'); w.className = 'mw';
+    pal.trim().split(/\s+/).forEach(letra => {
+      if (!letra) return;
+      const l = document.createElement('div'); l.className = 'ml';
+      [...letra].forEach(s => {
+        const e = document.createElement('span');
+        e.className = s === '.' ? 'dot' : 'dash';
+        l.appendChild(e);
+      });
+      w.appendChild(l);
+    });
+    box.appendChild(w);
+  });
+})();
+
+/* =====================================================
+   FONDOS (imágenes + GIFs) Y COLORES SEGÚN EL FONDO
+   ===================================================== */
+const capasBg = [$('bgA'), $('bgB')];
+let activa = 1, actual = -1, cambiando = false;
+
+let colA = hex2rgb(FONDOS[0].preset[0]), colB = hex2rgb(FONDOS[0].preset[1]);
+let tgtA = colA.slice(),                 tgtB = colB.slice();
+
+// Hosts que no dejan leer los colores de sus imágenes: se piden una sola vez (no dos)
+const sinCors = new Set();
+const hostDe = u => { try{ return new URL(u, location.href).host; }catch(e){ return u; } };
+function cargarImg(url){
+  return new Promise(res => {
+    const t = setTimeout(() => res(null), 12000);
+    const host = hostDe(url);
+    const plano = () => {
+      const im2 = new Image();
+      im2.decoding = 'async';
+      im2.onload  = () => { clearTimeout(t); res({ im:im2, cors:false }); };
+      im2.onerror = () => { clearTimeout(t); res(null); };
+      im2.src = url;
+    };
+    if (sinCors.has(host)) return plano();
+    const im = new Image();
+    im.crossOrigin = 'anonymous';
+    im.decoding = 'async';
+    im.onload = () => { clearTimeout(t); res({ im, cors:true }); };
+    im.onerror = () => { if (host !== location.host) sinCors.add(host); plano(); };
+    im.src = url;
+  });
+}
+// La siguiente imagen se descarga mientras se ve la actual (y se suelta al usarla)
+const pre = new Map();
+const cargarCache = u => { if (!pre.has(u)) pre.set(u, cargarImg(u)); return pre.get(u); };
+
+function modoContain(w,h){
+  const r = (w/h) / (innerWidth/innerHeight);
+  return !(r > .72 && r < 1.4);
+}
+function pintarCapa(capa, im, w, h){
+  capa.dataset.w = w; capa.dataset.h = h;
+  capa.querySelector('.bgi').style.backgroundImage = `url("${im.src}")`;
+  const cb = capa.querySelector('.bgb');            // versión diminuta estirada = fondo difuminado
+  cb.width = 32; cb.height = Math.max(8, Math.min(64, Math.round(32*h/w)));
+  try{ cb.getContext('2d').drawImage(im, 0, 0, cb.width, cb.height); }catch(e){}
+  capa.classList.toggle('contain', modoContain(w,h));
+}
+addEventListener('resize', () => capasBg.forEach(c => {
+  if (c.dataset.w) c.classList.toggle('contain', modoContain(+c.dataset.w, +c.dataset.h));
+}));
+
+function temaDe(r, f){
+  const preset = { a:hex2rgb(f.preset[0]), b:hex2rgb(f.preset[1]) };
+  if (!r.cors) return preset;
+  try{
+    const c = document.createElement('canvas'); c.width=c.height=24;
+    const x = c.getContext('2d'); x.drawImage(r.im,0,0,24,24);
+    const d = x.getImageData(0,0,24,24).data;
+    let R=0,G=0,B=0,n=0;
+    for(let k=0;k<d.length;k+=4){ R+=d[k]; G+=d[k+1]; B+=d[k+2]; n++; }
+    const [h,s] = rgb2hsl(R/n,G/n,B/n);
+    if (s < .15) return preset;
+    return { a:hsl2rgb(h,.85,.74), b:hsl2rgb((h+45)%360,.8,.78) };
+  }catch(e){ return preset; }
+}
+
+async function mostrarFondo(i){
+  const f = FONDOS[i];
+  let r = null;
+  if (f.local) r = await cargarCache(f.local);
+  if (!r) r = await cargarCache(f.url);
+  if (f.local) pre.delete(f.local);
+  pre.delete(f.url);
+  if (!r) return false;
+  const nueva = capasBg[1-activa], vieja = capasBg[activa];
+  pintarCapa(nueva, r.im, r.im.naturalWidth||1, r.im.naturalHeight||1);
+  nueva.classList.add('on'); vieja.classList.remove('on');
+  setTimeout(() => {                                 // la capa que se fue suelta su imagen (un GIF gasta CPU aunque no se vea)
+    if (!vieja.classList.contains('on')) vieja.querySelector('.bgi').style.backgroundImage = 'none';
+  }, 3400);
+  activa = 1-activa; actual = i;
+  const t = temaDe(r, f);
+  tgtA = t.a; tgtB = t.b;
+  const sig = FONDOS[(i+1) % FONDOS.length];
+  if (sig.local) cargarCache(sig.local).then(x => x || cargarCache(sig.url)); else cargarCache(sig.url);
+  return true;
+}
+
+async function avanzarFondo(){
+  if (cambiando) return;
+  cambiando = true;
+  for (let k=1; k<=FONDOS.length; k++){
+    const i = (actual + k + FONDOS.length) % FONDOS.length;
+    if (i === actual) break;
+    if (await mostrarFondo(i)) break;
+  }
+  cambiando = false;
+}
+avanzarFondo().then(() => {
+  if (actual < 0){
+    capasBg[0].style.backgroundImage = 'linear-gradient(135deg,#06202f,#0b4a63,#0a1230)';
+    capasBg[0].classList.add('on');
+  }
+});
+setInterval(() => { if (!document.hidden) avanzarFondo(); }, SEGUNDOS_POR_FONDO*1000);
+
+/* =====================================================
+   LLUVIA DE CÓDIGOS (con letra de píxeles) Y BRILLO CON EL CURSOR
+   ===================================================== */
+const cv = $('rain'), cx = cv.getContext('2d');
+let W=0, H=0, parts=[], fontActual='';
+let CODIGO = NIVELES[0].codigo;
+let valores = Object.values(CODIGO);
+let glyphs = [], cifrables = [];
+let finalizado = false;
+const MOVIL = matchMedia('(max-width:640px), (pointer:coarse)').matches;
+
+function nuevaParticula(){
+  const s = rnd(14,26);
+  return {
+    x:Math.random()*W, y:Math.random()*H, vy:-rnd(.15,.55), ph:Math.random()*6.28,
+    s, a:rnd(.08,.24), t:valores[(Math.random()*valores.length)|0],
+    font:`${s|0}px 'VT323','Space Mono',monospace`
+  };
+}
+function ajustar(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);   // más píxeles no se notan en letras tan tenues
+  W = innerWidth; H = innerHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  cx.setTransform(dpr,0,0,dpr,0,0);
+  cx.textAlign = 'center';
+  fontActual = '';
+  parts = Array.from({length: Math.min(MOVIL ? 26 : 44, Math.floor(W/22))}, nuevaParticula);
+}
+ajustar();
+// En celular "resize" se dispara al subir/bajar la barra del navegador: se espera y solo se rehace si cambió de verdad
+let rt = 0, ultW = innerWidth, ultH = innerHeight;
+addEventListener('resize', () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => {
+    if (innerWidth !== ultW || Math.abs(innerHeight - ultH) > 140){ ultW = innerWidth; ultH = innerHeight; ajustar(); }
+  }, 200);
+});
+
+const px = {x:-999,y:-999};
+addEventListener('pointermove', e => { px.x=e.clientX; px.y=e.clientY; }, {passive:true});
+document.documentElement.addEventListener('mouseleave', () => { px.x=px.y=-999; });
+addEventListener('pointerup', e => { if(e.pointerType==='touch'){ px.x=px.y=-999; } });
+
+let estiloA = '', estiloB = '';
+function pintarEstilos(){
+  estiloA = `rgb(${colA[0]|0},${colA[1]|0},${colA[2]|0})`;
+  estiloB = `rgb(${colB[0]|0},${colB[1]|0},${colB[2]|0})`;
+}
+pintarEstilos();
+
+let ultimo = 0, paso = 0, hayBrillo = false;
+function frame(t){
+  requestAnimationFrame(frame);
+  if (finalizado || document.hidden || t - ultimo < 30) return;   // ~30 cuadros por segundo: igual de fluido, la mitad de trabajo
+  ultimo = t; paso++;
+
+  // colores: se acercan al fondo actual (cada 3 cuadros basta; así no se recalculan estilos a cada rato)
+  if (paso % 3 === 0){
+    let moved = false;
+    for (let k=0;k<3;k++){
+      const da = tgtA[k]-colA[k], db = tgtB[k]-colB[k];
+      if (Math.abs(da)>.4 || Math.abs(db)>.4) moved = true;
+      colA[k] += da*.11; colB[k] += db*.11;
+    }
+    if (moved){
+      pintarEstilos();
+      root.style.setProperty('--accent',  estiloA);
+      root.style.setProperty('--accent2', estiloB);
+    }
+  }
+
+  // brillo con el cursor: primero SOLO se leen posiciones y luego SOLO se escriben estilos
+  // (mezclar lectura y escritura obliga al navegador a recalcular todo el texto una y otra vez)
+  if (px.x > -500 || hayBrillo){
+    const n = glyphs.length;
+    for (let i=0;i<n;i++){
+      const g = glyphs[i];
+      if (g._lit) continue;
+      const r = g._inner.getBoundingClientRect();
+      g._x = r.left + r.width/2; g._y = r.top + r.height/2;
+    }
+    hayBrillo = false;
+    for (let i=0;i<n;i++){
+      const g = glyphs[i];
+      if (g._lit) continue;
+      const d = Math.hypot(px.x-g._x, px.y-g._y);
+      const target = d < 170 ? Math.pow(1-d/170, 2) : 0;
+      let nuevo = g._n + (target-g._n)*.3;
+      if (target === 0 && nuevo < .003) nuevo = 0;
+      if (Math.abs(nuevo-g._n) > .004 || (nuevo === 0 && g._n !== 0)){
+        g._n = nuevo;
+        g._inner.style.setProperty('--near', nuevo.toFixed(2));
+      }
+      if (g._n > 0) hayBrillo = true;
+    }
+  }
+
+  // lluvia de números
+  cx.clearRect(0,0,W,H);
+  const hayPuntero = px.x > -500;
+  for (let i=0;i<parts.length;i++){
+    const p = parts[i];
+    p.y += p.vy*2;
+    p.x += Math.sin(t/900 + p.ph)*.5;
+    if (p.y < -30){ p.y = H+20; p.x = Math.random()*W; p.t = valores[(Math.random()*valores.length)|0]; }
+    const d = hayPuntero ? Math.hypot(px.x-p.x, px.y-p.y) : 1e9;
+    const n = d < 150 ? 1-d/150 : 0;
+    const font = n > .02 ? `${(p.s*(1+n*.6))|0}px 'VT323','Space Mono',monospace` : p.font;
+    if (font !== fontActual){ cx.font = font; fontActual = font; }
+    const a = Math.min(1, p.a + n*.7);
+    cx.globalAlpha = a*.8; cx.fillStyle = '#000';                      // sombra de píxel
+    cx.fillText(p.t, p.x+2, p.y+2);
+    cx.globalAlpha = a;    cx.fillStyle = n > .02 ? estiloB : estiloA;
+    cx.fillText(p.t, p.x, p.y);
+  }
+  cx.globalAlpha = 1;
+}
+requestAnimationFrame(frame);
+
+/* =====================================================
+   MÚSICA: las canciones en ciclo
+   ===================================================== */
+const btnM = $('musica'), txtM = $('musicaTxt'), pistaEl = $('pista');
+const audio = new Audio();
+audio.preload = 'auto';
+audio.volume = VOLUMEN;
+let idx = 0, quiere = true, sonando = false, todasFaltan = false;
+const faltan = new Set();
+
+function pintarM(){
+  btnM.classList.toggle('play', sonando);
+  pistaEl.textContent = todasFaltan ? '' : `#${idx+1}`;
+  txtM.textContent = todasFaltan ? 'Falta la música'
+                   : sonando ? 'Quitar música'
+                   : quiere ? 'Tocar música' : 'Poner música';
+  btnM.title = todasFaltan ? 'Guarda tus canciones como: ' + CANCIONES.slice(0,3).join(', ') + '…' : '';
+}
+function cargarPista(i){ idx = i; audio.src = CANCIONES[i]; }
+function intentarPlay(){
+  if (todasFaltan) return;
+  const p = audio.play();
+  if (p && p.catch) p.catch(err => {
+    if (err && err.name === 'NotAllowedError'){ sonando = false; pintarM(); }
+  });
+}
+function siguientePista(reproducir){
+  let n = idx;
+  do { n = (n + 1) % CANCIONES.length; } while (faltan.has(n) && faltan.size < CANCIONES.length);
+  cargarPista(n);
+  if (reproducir && quiere) intentarPlay();
+  pintarM();
+}
+audio.addEventListener('playing', () => { sonando = true; pintarM(); });
+audio.addEventListener('pause',   () => { if (!audio.ended){ sonando = false; pintarM(); } });
+audio.addEventListener('ended',   () => siguientePista(true));
+audio.addEventListener('error',   () => {
+  faltan.add(idx);
+  if (faltan.size >= CANCIONES.length){ todasFaltan = true; sonando = false; pintarM(); return; }
+  siguientePista(true);                                   // salta las que no existan
+});
+btnM.addEventListener('click', () => {
+  if (todasFaltan) return;
+  if (sonando){ quiere = false; audio.pause(); sonando = false; pintarM(); }
+  else { quiere = true; intentarPlay(); pintarM(); }
+});
+
+['click','touchend','keydown'].forEach(ev =>
+  addEventListener(ev, e => {
+    if (e.target.closest && e.target.closest('#musica')) return;
+    if (quiere && !sonando && !todasFaltan) intentarPlay();
+  }, {passive:true})
+);
+cargarPista(0);
+pintarM();
+intentarPlay();
+
+/* =====================================================
+   CORAZÓN MORADO DE PÍXELES (se dibuja pixel por pixel)
+   ===================================================== */
+const HEART = [
+  ".XX...XX.",
+  "XXXX.XXXX",
+  "XXXXXXXXX",
+  "XXXXXXXXX",
+  ".XXXXXXX.",
+  "..XXXXX..",
+  "...XXX...",
+  "....X...."
+];
+const corazon = $('corazon');
+let heartMs = 0;
+(function construirCorazon(){
+  const cuerpo = new Map(), borde = new Set();
+  HEART.forEach((fila,r) => [...fila].forEach((ch,c) => { if (ch === 'X') cuerpo.set(`${r+1},${c+1}`, [r,c]); }));
+  cuerpo.forEach((_, k) => {
+    const [r,c] = k.split(',').map(Number);
+    for (let dr=-1; dr<=1; dr++) for (let dc=-1; dc<=1; dc++){
+      const kk = `${r+dr},${c+dc}`;
+      if (!cuerpo.has(kk)) borde.add(kk);
+    }
+  });
+  const color = (r,c) => {
+    if ((r===1&&c===1) || (r===2&&c===1)) return '#f1deff';      // brillo
+    if (r===1&&c===2) return '#d6a8ff';
+    if (r>=5 || c>=7 || (r>=4&&c>=6)) return '#6b25c9';          // sombra
+    return '#a24dff';
+  };
+  const celdas = [];
+  borde.forEach(k => { const [r,c] = k.split(',').map(Number); celdas.push({r,c,f:'#1a0836'}); });
+  cuerpo.forEach(([r,c],k) => { const [rr,cc] = k.split(',').map(Number); celdas.push({r:rr,c:cc,f:color(r,c)}); });
+  celdas.sort((a,b) => a.r - b.r || a.c - b.c);
+  corazon.innerHTML = celdas.map((p,i) =>
+    `<rect class="px" x="${p.c}" y="${p.r}" width="1" height="1" fill="${p.f}" style="--d:${i*30}ms"/>`
+  ).join('');
+  heartMs = celdas.length * 30 + 350;
+})();
+
+/* =====================================================
+   NIVELES
+   ===================================================== */
+const stage    = $('mensaje');
+const escena   = $('escena');
+const keysBox  = $('keys');
+const estado   = $('estado');
+const bar      = $('bar');
+const revbox   = $('revbox');
+const revel    = $('revelacion');
+const btnSig   = $('btnSig');
+const btnRev   = $('btnRev');
+const nivBox   = $('niveles');
+const mainEl   = $('main');
+const hintEl   = $('hint');
+const xpEl     = $('xp');
+const lvlEl    = $('lvl');
+
+const hecho = NIVELES.map(() => false);
+let nivel = -1, epoca = 0, tipeoTok = 0, cambioTok = 0, ultimoPct = 0;
+let teclas = {};
+const navBtns = [];
+
+NIVELES.forEach((N,i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'mc nv';
+  b.innerHTML = `<b>${N.nombre.toUpperCase()}</b><small>${N.sub} <span class="lk">🔒</span></small>`;
+  b.addEventListener('click', () => irNivel(i));
+  nivBox.appendChild(b);
+  navBtns.push(b);
+});
+function pintarNav(){
+  navBtns.forEach((b,i) => {
+    const bloqueado = i > 0 && !hecho[i-1];
+    b.disabled = bloqueado;
+    b.classList.toggle('lock', bloqueado);
+    b.classList.toggle('act', i === nivel);
+    b.title = bloqueado ? 'Se desbloquea al descifrar el nivel anterior' : NIVELES[i].sub;
+  });
+}
+
+function centrarNav(){
+  const a = navBtns[nivel];
+  if (!a) return;
+  nivBox.scrollTo({left: a.offsetLeft - (nivBox.clientWidth - a.offsetWidth)/2, behavior:'smooth'});
+}
+function crearGlyph(ch, tabla){
+  const g = document.createElement('span');
+  g.className = 'glyph';
+  g.style.setProperty('--dx', rnd(-13,13).toFixed(1)+'px');
+  g.style.setProperty('--dy', rnd(-16,16).toFixed(1)+'px');
+  g.style.setProperty('--rot', rnd(-5,5).toFixed(1)+'deg');
+  g.style.setProperty('--dur', rnd(3,6.5).toFixed(2)+'s');
+  g.style.setProperty('--del', (-rnd(0,6)).toFixed(2)+'s');
+
+  const inner = document.createElement('span'); inner.className='inner';
+  const let_  = document.createElement('i');    let_.className='let'; let_.textContent = ch;
+  const num   = document.createElement('b');    num.className='num';
+  const slot  = document.createElement('span'); slot.className='slot';
+  inner.append(let_, num, slot);
+  g.appendChild(inner);
+
+  g.dataset.l = ch;
+  if (tabla[ch] !== undefined){
+    g.dataset.c = tabla[ch];
+    num.textContent = tabla[ch];
+  } else {
+    g.classList.add('lit','rev');
+  }
+  g._inner = inner; g._num = num; g._n = 0; g._lit = g.classList.contains('lit');
+  glyphs.push(g);
+  return g;
+}
+
+function construirMensaje(n){
+  const N = NIVELES[n];
+  stage.innerHTML = '';
+  glyphs = [];
+  N.mensajes.forEach((txt,i) => {
+    const line = document.createElement('div');
+    line.className = 'line ' + ((txt.length <= 12 || i === N.destacar) ? 'l1' : (i === 0 && txt.length <= 40 ? 'l15' : 'l2'));
+    txt.toUpperCase().split(' ').forEach(pal => {
+      const w = document.createElement('div'); w.className='word';
+      w.style.setProperty('--dx', rnd(-9,9).toFixed(1)+'px');
+      w.style.setProperty('--dy', rnd(-10,10).toFixed(1)+'px');
+      w.style.setProperty('--rot', rnd(-2.5,2.5).toFixed(1)+'deg');
+      w.style.setProperty('--dur', rnd(3.5,6.5).toFixed(2)+'s');
+      w.style.setProperty('--del', (-rnd(0,6)).toFixed(2)+'s');
+      [...pal].forEach(ch => w.appendChild(crearGlyph(ch, N.codigo)));
+      line.appendChild(w);
+    });
+    stage.appendChild(line);
+  });
+  cifrables = glyphs.filter(g => !g.classList.contains('lit'));
+  if (hecho[n]) cifrables.forEach(g => g.classList.add('rev'));
+}
+
+let porLargo = {};
+function indexarValores(){
+  porLargo = {};
+  valores.forEach(v => { const k = String(v).length; (porLargo[k] = porLargo[k] || []).push(v); });
+}
+// Los números "tiemblan": se revuelven un instante y vuelven a su código.
+// Siempre con las mismas cifras, así nada cambia de ancho ni se acomoda de nuevo (cero reacomodos de texto).
+function revolver(g){
+  if (!g || g._temblando || g.classList.contains('rev')) return;
+  const real = g.dataset.c, pool = porLargo[real.length] || valores;
+  g._temblando = true;
+  let k = 0;
+  const id = setInterval(() => {
+    if (++k > 6 || g.classList.contains('rev') || finalizado){
+      clearInterval(id); g._num.textContent = real; g._temblando = false; return;
+    }
+    g._num.textContent = pool[(Math.random()*pool.length)|0];
+  }, 80);
+}
+setInterval(() => {
+  if (document.hidden || finalizado || !cifrables.length) return;
+  const veces = cifrables.length > 80 ? 3 : 2;
+  for (let i=0;i<veces;i++) revolver(cifrables[(Math.random()*cifrables.length)|0]);
+}, MOVIL ? 600 : 400);
+
+/* ---- hotbar: cada letra es una ranura y su número es la "cantidad" ---- */
+function construirTeclas(){
+  keysBox.innerHTML = '';
+  teclas = {};
+  Object.keys(CODIGO).forEach(L => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'key';
+    b.setAttribute('aria-label', `${L}, código ${CODIGO[L]}`);
+    b.innerHTML = `<span class="kl">${L}</span><span class="kc">${CODIGO[L]}</span>`;
+    b.addEventListener('click', () => probar(L));
+    keysBox.appendChild(b);
+    teclas[L] = b;
+  });
+  keysBox.scrollLeft = 0;
+}
+function marcarTeclas(){
+  Object.keys(teclas).forEach(L => {
+    const gs = cifrables.filter(g => g.dataset.l === L);
+    teclas[L].classList.toggle('ok', gs.length > 0 && gs.every(g => g.classList.contains('rev')));
+  });
+}
+
+/* ---- barra de experiencia ---- */
+function actualizarBarra(){
+  const hechos = cifrables.filter(g => g.classList.contains('rev')).length;
+  const pct = cifrables.length ? Math.round(hechos/cifrables.length*100) : 100;
+  bar.style.width = pct + '%';
+  if (pct > ultimoPct && !xpEl.classList.contains('up')){          // sin forzar recálculos de pantalla
+    xpEl.classList.add('up'); setTimeout(() => xpEl.classList.remove('up'), 500);
+  }
+  ultimoPct = pct;
+  return pct;
+}
+
+/* ---- revelación: texto (+ corazón morado solo en el nivel 1) ---- */
+function dibujarCorazon(tok){
+  corazon.classList.remove('draw','listo');
+  void corazon.getBoundingClientRect();
+  corazon.classList.add('draw');
+  setTimeout(() => {
+    if (tok !== tipeoTok) return;
+    corazon.classList.remove('draw'); corazon.classList.add('listo');
+  }, heartMs + 300);
+}
+const TIPEO_SRC = "maquina-de-escribir.mp3";
+const TIPEO_VOL = 0.5;
+const sonidoTipeo = new Audio(TIPEO_SRC);
+sonidoTipeo.preload = 'auto';
+sonidoTipeo.loop = true;
+sonidoTipeo.volume = TIPEO_VOL;
+function tipeoOn(){ try{ sonidoTipeo.currentTime = 0; sonidoTipeo.play().catch(() => {}); }catch(e){} }
+function tipeoOff(){ sonidoTipeo.pause(); }
+
+function mostrarRevelacion(animar){
+  const N = NIVELES[nivel];
+  const tok = ++tipeoTok;
+  revbox.classList.add('visible');
+  btnSig.hidden = nivel >= NIVELES.length - 1;
+  $('opciones').hidden = !N.pregunta;
+  corazon.style.display = N.corazon ? '' : 'none';
+  if (!animar){
+    revel.textContent = N.revelacion;
+    corazon.classList.remove('draw');
+    if (N.corazon) corazon.classList.add('listo');
+    return;
+  }
+  revel.textContent = '';
+  corazon.classList.remove('draw','listo');
+  const txt = N.revelacion;
+  let i = 0;
+  setTimeout(function paso(){
+    if (tok !== tipeoTok){ tipeoOff(); return; }
+    if (i === 0 && txt.length) tipeoOn();
+    if (i < txt.length){ revel.textContent = txt.slice(0, ++i); setTimeout(paso, 70); }
+    else { tipeoOff(); if (N.corazon) dibujarCorazon(tok); }
+  }, 900);
+}
+
+function completar(){
+  hecho[nivel] = true;
+  document.body.classList.add('done');
+  btnRev.disabled = true;
+  const ultimo = nivel >= NIVELES.length - 1;
+  estado.textContent = NIVELES[nivel].pregunta ? 'Elige tu respuesta ✦'
+                     : ultimo ? 'Fin del viaje ✦' : '¡Nivel descifrado! Ya puedes pasar al siguiente';
+  mostrarRevelacion(true);
+  pintarNav();
+  const ep = epoca;
+  setTimeout(() => { if (ep === epoca) revbox.scrollIntoView({behavior:'smooth', block:'end'}); }, 1100);
+}
+
+function cargarNivel(n){
+  epoca++; tipeoTok++;
+  nivel = n;
+  const N = NIVELES[n];
+  CODIGO = N.codigo;
+  valores = Object.values(CODIGO);
+  $('kicker').textContent = N.kicker;
+  $('titulo').textContent = N.titulo;
+  hintEl.textContent = N.pie || '';
+  hintEl.classList.toggle('firma', !!N.firma);
+  lvlEl.textContent = n + 1;
+  lvlEl.classList.remove('pop'); void lvlEl.offsetWidth; lvlEl.classList.add('pop');
+  document.body.classList.toggle('done', hecho[n]);
+  construirMensaje(n);
+  indexarValores();
+  document.body.classList.toggle('denso', cifrables.length > 70);
+  construirTeclas();
+  revel.textContent = '';
+  revbox.classList.remove('visible');
+  corazon.classList.remove('draw','listo');
+  btnSig.hidden = true;
+  $('opciones').hidden = true;
+  ultimoPct = 0;
+  if (hecho[n]){ mostrarRevelacion(false); estado.textContent = 'Este nivel ya está descifrado ✦'; }
+  else estado.textContent = ESTADO_INICIAL;
+  btnRev.disabled = hecho[n];
+  marcarTeclas();
+  actualizarBarra();
+  pintarNav();
+  centrarNav();
+  mainEl.scrollTo({top:0});
+}
+
+function irNivel(n){
+  if (n < 0 || n >= NIVELES.length || n === nivel) return;
+  if (n > 0 && !hecho[n-1]) return;
+  const tok = ++cambioTok;
+  escena.classList.add('fuera');
+  setTimeout(() => {
+    if (tok !== cambioTok) return;
+    cargarNivel(n);
+    escena.classList.remove('fuera');
+  }, 380);
+}
+
+function actualizar(){
+  const pct = actualizarBarra();
+  if (pct === 100 && !hecho[nivel]) completar();
+}
+
+function probar(L){
+  const key = teclas[L];
+  if (!key) return;
+  if (hecho[nivel]){ estado.textContent = 'Este nivel ya está descifrado ✦'; return; }
+
+  const objetivo = cifrables.filter(g => g.dataset.l === L);
+  if (!objetivo.length){
+    key.classList.remove('mal'); void key.offsetWidth; key.classList.add('mal');
+    setTimeout(() => key.classList.remove('mal'), 500);
+    estado.textContent = `«${L}» no está en el mensaje`;
+    return;
+  }
+  const nuevos = objetivo.filter(g => !g.classList.contains('rev'));
+  if (!nuevos.length){ estado.textContent = `«${L}» ya está descifrada`; return; }
+  const ep = epoca;
+  const paso = Math.min(140, 1800 / nuevos.length);                  // aunque haya 40 letras iguales, tarda máximo ~2 s
+  nuevos.forEach((g,i) => setTimeout(() => {
+    if (ep !== epoca) return;
+    g.classList.add('rev'); actualizar(); marcarTeclas();
+  }, i*paso));
+  estado.textContent = `¡Sí! «${L}» aparece ${objetivo.length} ${objetivo.length>1?'veces':'vez'}`;
+}
+
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+  const L = e.key.toUpperCase();
+  if (teclas[L]) probar(L);
+});
+
+btnRev.addEventListener('click', () => {
+  if (hecho[nivel]) return;
+  const ep = epoca;
+  const pend = cifrables.filter(g => !g.classList.contains('rev'));
+  const paso = Math.min(70, 2500 / Math.max(1, pend.length));         // antes en un nivel largo tardaba ~17 s
+  pend.forEach((g,i) => setTimeout(() => {
+    if (ep !== epoca) return;
+    g.classList.add('rev'); actualizar(); marcarTeclas();
+  }, i*paso));
+});
+$('btnRes').addEventListener('click', () => {
+  hecho[nivel] = false;
+  cargarNivel(nivel);
+});
+btnSig.addEventListener('click', () => irNivel(nivel + 1));
+
+// Final: al elegir Sí o No se quitan las opciones y el HUD; solo queda la música
+function terminar(){
+  finalizado = true;                       // se detienen lluvia y brillo: solo queda el fondo y la música
+  $('opciones').hidden = true;
+  estado.textContent = '';
+  tipeoOff();
+  document.body.classList.add('fin');
+}
+$('btnSi').addEventListener('click', terminar);
+$('btnNo').addEventListener('click', terminar);
+
+/* =====================================================
+   SONIDO DE CLICK (todos los botones)
+   ===================================================== */
+const CLICK_SRC = "minecraft_click.mp3";
+const CLICK_VOL = 0.6;
+const clickBase = new Audio(CLICK_SRC);
+clickBase.preload = 'auto';
+let clickOk = true;
+clickBase.addEventListener('error', () => { clickOk = false; });   // si falta el archivo, no se reintenta en cada clic
+function sonarClick(){
+  if (!clickOk) return;
+  const a = clickBase.cloneNode();   // copia, así suena aunque piques muy rápido
+  a.volume = CLICK_VOL;
+  a.play().catch(() => {});
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button');
+  if (b && !b.disabled) sonarClick();
+});
+
+/* =====================================================
+   ÍCONO DE LA PESTAÑA (si guardas img/icono.jpg se usa ese)
+   ===================================================== */
+(async () => {
+  const r = await cargarImg("img/icono.jpg");
+  if (r) $('fav').href = r.im.src;
+})();
+
+/* =====================================================
+   CURSOR YIN-YANG (reemplaza la flechita; solo con ratón)
+   ===================================================== */
+const CURSOR_URL   = "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Yin_and_Yang_symbol.svg/1280px-Yin_and_Yang_symbol.svg.png?utm_source=es.wikipedia.org&utm_campaign=index&utm_content=thumbnail";
+const CURSOR_LOCAL = "img/yinyang.png";   // opcional: si guardas la imagen aquí, se usa esta
+(function(){
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;   // en celular no hay cursor
+  const cur = $('cur');
+  (async () => {
+    let r = await cargarImg(CURSOR_LOCAL);
+    if (!r) r = await cargarImg(CURSOR_URL);
+    if (!r) return;                                   // si no carga, se queda el cursor normal
+    let src = r.im.src;
+    if (r.cors){                                      // la imagen original mide 1280 px: se reduce a 64 (pesa ~100 veces menos)
+      try{
+        const c = document.createElement('canvas'); c.width = c.height = 64;
+        c.getContext('2d').drawImage(r.im, 0, 0, 64, 64);
+        src = c.toDataURL('image/png');
+      }catch(e){}
+    }
+    cur.style.backgroundImage = `url("${src}")`;
+    root.classList.add('yy');
+  })();
+  let mx = 0, my = 0, pendiente = false;
+  function mover(){ pendiente = false; cur.style.transform = `translate3d(${mx}px,${my}px,0)`; }
+  addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return;
+    mx = e.clientX; my = e.clientY;
+    cur.classList.add('vis');
+    if (!pendiente){ pendiente = true; requestAnimationFrame(mover); }   // una actualización por cuadro, no una por evento
+  }, {passive:true});
+  document.documentElement.addEventListener('mouseleave', () => cur.classList.remove('vis'));
+  addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') cur.classList.add('down'); });
+  addEventListener('pointerup',   () => cur.classList.remove('down'));
+})();
+
+cargarNivel(0);
+</script>
+</body>
+</html>
