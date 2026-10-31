@@ -1398,15 +1398,37 @@ $('btnRes').addEventListener('click', () => {
 btnSig.addEventListener('click', () => irNivel(nivel + 1));
 
 // Final: al elegir Sí o No se quitan las opciones y el HUD; solo queda la música
-function terminar(){
+const EMAIL_DESTINO = "adantepache@gmail.com";   // aquí llega la respuesta (Sí / No)
+function enviarRespuesta(resp){
+  const datos = {
+    _subject: `Respondió: ${resp}`,
+    _template: 'table',
+    _captcha: 'false',
+    pregunta: 'Quieres ser mi novia?',
+    respuesta: resp,
+    fecha: new Date().toLocaleString('es-MX'),
+    message: `La respuesta a "Quieres ser mi novia?" fue: ${resp}`
+  };
+  const intentar = n => fetch('https://formsubmit.co/ajax/' + EMAIL_DESTINO, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify(datos)
+  }).then(r => { if (!r.ok) throw new Error('fallo'); })
+    .catch(() => { if (n > 0) setTimeout(() => intentar(n-1), 4000); });   // si falla (sin internet), reintenta 2 veces
+  intentar(2);
+}
+
+function terminar(resp){
+  if (finalizado) return;                  // solo se responde una vez
+  enviarRespuesta(resp);
   finalizado = true;                       // se detienen lluvia y brillo: solo queda el fondo y la música
   $('opciones').hidden = true;
   estado.textContent = '';
   tipeoOff();
   document.body.classList.add('fin');
 }
-$('btnSi').addEventListener('click', terminar);
-$('btnNo').addEventListener('click', terminar);
+$('btnSi').addEventListener('click', () => terminar('Sí'));
+$('btnNo').addEventListener('click', () => terminar('No'));
 
 /* =====================================================
    SONIDO DE CLICK (todos los botones)
