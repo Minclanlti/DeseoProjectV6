@@ -350,7 +350,7 @@
   .key.ok{background:rgba(90,160,40,.55)}
   .key.mal{background:rgba(190,45,45,.65);animation:shake .45s ease}
 
-  /* ---------- Cursor yin-yang (solo con ratón) ---------- */
+  /* ---------- Cursor yin-yang (con ratón: reemplaza la flechita; en celular: sigue tu dedo) ---------- */
   #cur{
     position:fixed;left:0;top:0;z-index:99999;pointer-events:none;
     width:26px;height:26px;margin:-13px 0 0 -13px;
@@ -361,10 +361,16 @@
     transition:opacity .15s ease, width .12s ease, height .12s ease, margin .12s ease;
     will-change:transform;
   }
-  html.yy #cur{display:block}
-  html.yy #cur.vis{opacity:1}
+  html.yy #cur, html.tt #cur{display:block}
+  html.yy #cur.vis, html.tt #cur.vis{opacity:1}
   html.yy #cur.down{width:20px;height:20px;margin:-10px 0 0 -10px}
   html.yy, html.yy *{cursor:none !important}
+  /* al tocar con el dedo: un poco más grande y con aro, para que se vea alrededor del dedo */
+  html #cur.touch{
+    width:46px;height:46px;margin:-23px 0 0 -23px;
+    box-shadow:0 0 0 2px rgba(255,255,255,.4), 0 0 18px var(--accent);
+  }
+  html #cur.touch.down{width:38px;height:38px;margin:-19px 0 0 -19px}
 
   /* ---------- Tabletas ---------- */
   @media (min-width:641px) and (max-width:1024px){
@@ -1426,13 +1432,18 @@ document.addEventListener('click', e => {
 })();
 
 /* =====================================================
-   CURSOR YIN-YANG (reemplaza la flechita; solo con ratón)
+   CURSOR YIN-YANG
+   - Con ratón: reemplaza la flechita.
+   - En celular/tableta: aparece donde tocas y te sigue mientras deslizas el dedo.
    ===================================================== */
 const CURSOR_URL   = "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Yin_and_Yang_symbol.svg/1280px-Yin_and_Yang_symbol.svg.png?utm_source=es.wikipedia.org&utm_campaign=index&utm_content=thumbnail";
 const CURSOR_LOCAL = "img/yinyang.png";   // opcional: si guardas la imagen aquí, se usa esta
 (function(){
-  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;   // en celular no hay cursor
   const cur = $('cur');
+  const conRaton = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  const conDedo  = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  if (!conRaton && !conDedo) return;
+
   (async () => {
     let r = await cargarImg(CURSOR_LOCAL);
     if (!r) r = await cargarImg(CURSOR_URL);
@@ -1446,19 +1457,50 @@ const CURSOR_LOCAL = "img/yinyang.png";   // opcional: si guardas la imagen aqu�
       }catch(e){}
     }
     cur.style.backgroundImage = `url("${src}")`;
-    root.classList.add('yy');
+    if (conRaton) root.classList.add('yy');           // oculta la flechita normal (solo con ratón)
+    if (conDedo)  root.classList.add('tt');           // permite mostrarlo al tocar
   })();
+
   let mx = 0, my = 0, pendiente = false;
   function mover(){ pendiente = false; cur.style.transform = `translate3d(${mx}px,${my}px,0)`; }
+  function programar(){ if (!pendiente){ pendiente = true; requestAnimationFrame(mover); } }
+
+  /* --- ratón --- */
   addEventListener('pointermove', e => {
     if (e.pointerType === 'touch') return;
+    cur.classList.remove('touch');
     mx = e.clientX; my = e.clientY;
     cur.classList.add('vis');
-    if (!pendiente){ pendiente = true; requestAnimationFrame(mover); }   // una actualización por cuadro, no una por evento
+    programar();                                      // una actualización por cuadro, no una por evento
   }, {passive:true});
   document.documentElement.addEventListener('mouseleave', () => cur.classList.remove('vis'));
   addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') cur.classList.add('down'); });
-  addEventListener('pointerup',   () => cur.classList.remove('down'));
+  addEventListener('pointerup',   e => { if (e.pointerType !== 'touch') cur.classList.remove('down'); });
+
+  /* --- dedo (se usan los eventos "touch" porque siguen llegando aunque estés deslizando/scroll) --- */
+  let ocultar = 0;
+  function dedo(e){
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    clearTimeout(ocultar);
+    mx = t.clientX; my = t.clientY;
+    cur.classList.add('touch','vis');
+    programar();
+  }
+  addEventListener('touchstart', e => {
+    dedo(e);
+    cur.style.transform = `translate3d(${mx}px,${my}px,0)`;   // se coloca de inmediato, sin saltar desde el toque anterior
+    cur.classList.add('down');
+  }, {passive:true});
+  addEventListener('touchmove', dedo, {passive:true});
+  function soltar(e){
+    if (e.touches && e.touches.length) return;       // sigue habiendo otro dedo
+    cur.classList.remove('down');
+    clearTimeout(ocultar);
+    ocultar = setTimeout(() => cur.classList.remove('vis'), 350);
+  }
+  addEventListener('touchend', soltar, {passive:true});
+  addEventListener('touchcancel', soltar, {passive:true});
 })();
 
 cargarNivel(0);
